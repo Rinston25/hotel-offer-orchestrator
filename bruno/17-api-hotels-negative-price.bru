@@ -1,0 +1,21 @@
+meta {
+  name: Negative price returns 400
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi&minPrice=-5
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 400
+}
+
+tests {
+  test("flags minPrice", function () {
+    expect(res.body.details[0].field).to.equal("minPrice");
+  });
+}

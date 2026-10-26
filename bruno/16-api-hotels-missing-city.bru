@@ -1,0 +1,22 @@
+meta {
+  name: Missing city returns 400
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{baseUrl}}/api/hotels
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 400
+}
+
+tests {
+  test("flags city", function () {
+    expect(res.body.error).to.equal("INVALID_REQUEST");
+    expect(res.body.details[0].field).to.equal("city");
+  });
+}

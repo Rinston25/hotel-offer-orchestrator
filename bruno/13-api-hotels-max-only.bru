@@ -1,0 +1,22 @@
+meta {
+  name: Price range - maxPrice only
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi&maxPrice=3500
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("no hotel above maxPrice", function () {
+    expect(res.body.length).to.be.greaterThan(0);
+    res.body.forEach((h) => expect(h.price).to.be.at.most(3500));
+  });
+}

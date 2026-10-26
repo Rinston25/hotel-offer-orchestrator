@@ -158,7 +158,7 @@ Open the `bruno/` folder in Bruno and select the `local` environment, or from th
 cd bruno && npx @usebruno/cli run --env local
 ```
 
-Requests 1-7 run against a healthy stack. Request 8 only passes with `SUPPLIER_B_FAIL=true` and an empty cache (see its docs tab).
+Requests 1-7 and 9-17 run against a healthy stack (they cover dedupe rules, all three cities, price-range edge cases and validation). Requests 8 and 18 only pass in failure mode: 8 with `SUPPLIER_B_FAIL=true`, 18 with both `SUPPLIER_A_FAIL` and `SUPPLIER_B_FAIL` set, each with an empty cache (see their docs tabs).
 
 ## Simulating a supplier failure
 

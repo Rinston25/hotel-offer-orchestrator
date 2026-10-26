@@ -1,0 +1,32 @@
+meta {
+  name: Search hotels - Mumbai (tie goes to higher commission)
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=mumbai
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Gateway Suites ties at 6400: Supplier B wins on commission 19 vs 16", function () {
+    const hotel = res.body.find((h) => h.name.toLowerCase() === "gateway suites");
+    expect(hotel).to.include({ price: 6400, supplier: "Supplier B", commissionPct: 19 });
+  });
+
+  test("Sea View Residency keeps the cheaper Supplier B price", function () {
+    const hotel = res.body.find((h) => h.name === "Sea View Residency");
+    expect(hotel).to.include({ price: 7450, supplier: "Supplier B" });
+  });
+
+  test("each hotel appears once", function () {
+    const names = res.body.map((h) => h.name.trim().toLowerCase());
+    expect(new Set(names).size).to.equal(names.length);
+  });
+}

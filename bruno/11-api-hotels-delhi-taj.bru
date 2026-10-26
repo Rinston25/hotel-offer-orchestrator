@@ -1,0 +1,29 @@
+meta {
+  name: Search hotels - Delhi (price tie, name casing)
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Taj Palace ties at 9200: Supplier B wins on commission 16 vs 12, name is trimmed", function () {
+    const matches = res.body.filter((h) => h.name.trim().toLowerCase() === "taj palace");
+    expect(matches).to.have.length(1);
+    expect(matches[0]).to.include({ price: 9200, supplier: "Supplier B", commissionPct: 16 });
+    expect(matches[0].name).to.equal(matches[0].name.trim());
+  });
+
+  test("Lotus Inn keeps the cheaper Supplier A price", function () {
+    const hotel = res.body.find((h) => h.name.toLowerCase() === "lotus inn");
+    expect(hotel).to.include({ price: 3100, supplier: "Supplier A" });
+  });
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Both suppliers down - run with both FAIL flags
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=bangalore
+  body: none
+  auth: none
+}
+
+docs {
+  Only meaningful when both suppliers fail and the cache is empty:
+
+    docker compose exec redis redis-cli FLUSHALL
+    SUPPLIER_A_FAIL=true SUPPLIER_B_FAIL=true docker compose up -d app
+}
+
+tests {
+  test("502 with a clear message", function () {
+    expect(res.getStatus()).to.equal(502);
+    expect(res.body.error).to.equal("ALL_SUPPLIERS_FAILED");
+    expect(res.body.message).to.contain("All suppliers failed");
+    expect(res.getHeader("x-degraded-suppliers")).to.equal("supplierA,supplierB");
+  });
+}

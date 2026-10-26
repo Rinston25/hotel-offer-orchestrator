@@ -1,0 +1,21 @@
+meta {
+  name: Price range - nothing matches
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi&minPrice=100&maxPrice=200
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("returns an empty list, not an error", function () {
+    expect(res.body).to.eql([]);
+  });
+}
