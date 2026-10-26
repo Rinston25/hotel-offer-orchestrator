@@ -1,0 +1,21 @@
+meta {
+  name: Non-numeric price returns 400
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi&minPrice=abc
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 400
+}
+
+tests {
+  test("flags minPrice", function () {
+    expect(res.body.details[0].field).to.equal("minPrice");
+  });
+}

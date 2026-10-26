@@ -1,0 +1,31 @@
+meta {
+  name: Search hotels (deduped)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("no degraded header when both suppliers are healthy", function () {
+    expect(res.getHeader("x-degraded-suppliers")).to.equal(undefined);
+  });
+
+  test("Holtin is deduped to the cheapest offer (Supplier B)", function () {
+    const holtin = res.body.filter((h) => h.name === "Holtin");
+    expect(holtin).to.eql([{ name: "Holtin", price: 5340, supplier: "Supplier B", commissionPct: 20 }]);
+  });
+
+  test("sorted by price ascending", function () {
+    const prices = res.body.map((h) => h.price);
+    expect(prices).to.eql([...prices].sort((a, b) => a - b));
+  });
+}

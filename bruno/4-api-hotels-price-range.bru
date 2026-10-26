@@ -1,0 +1,22 @@
+meta {
+  name: Search hotels with price range
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi&minPrice=3000&maxPrice=6000
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("all prices within the range", function () {
+    expect(res.body.length).to.be.greaterThan(0);
+    res.body.forEach((h) => expect(h.price).to.be.within(3000, 6000));
+  });
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Supplier A hotels
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/supplierA/hotels?city=delhi
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("returns hotels with the expected fields", function () {
+    const hotels = res.body;
+    expect(hotels.length).to.be.greaterThan(0);
+    expect(hotels[0]).to.have.all.keys("hotelId", "name", "price", "city", "commissionPct");
+  });
+}

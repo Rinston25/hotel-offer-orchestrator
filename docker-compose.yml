@@ -1,0 +1,93 @@
+x-app-environment: &app-environment
+  LOG_LEVEL: info
+  REDIS_URL: redis://redis:6379
+  TEMPORAL_ADDRESS: temporal:7233
+  TEMPORAL_NAMESPACE: default
+  TEMPORAL_TASK_QUEUE: hotel-offers
+  CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-600}
+  # The worker and the health check call the suppliers (served by the app) over the compose network.
+  SUPPLIER_A_URL: http://app:3000/supplierA/hotels
+  SUPPLIER_B_URL: http://app:3000/supplierB/hotels
+  # Failure simulation, read by the app: `SUPPLIER_B_FAIL=true docker compose up`
+  SUPPLIER_A_FAIL: ${SUPPLIER_A_FAIL:-false}
+  SUPPLIER_B_FAIL: ${SUPPLIER_B_FAIL:-false}
+  SUPPLIER_A_DELAY_MS: ${SUPPLIER_A_DELAY_MS:-0}
+  SUPPLIER_B_DELAY_MS: ${SUPPLIER_B_DELAY_MS:-0}
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment: *app-environment
+    depends_on:
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    restart: on-failure
+
+  worker:
+    build: .
+    command: ["node", "dist/temporal/worker.js"]
+    environment: *app-environment
+    depends_on:
+      temporal:
+        condition: service_healthy
+      app:
+        condition: service_started
+    restart: on-failure
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+    volumes:
+      - temporal-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  temporal:
+    image: temporalio/auto-setup:1.25.2
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: temporal
+      POSTGRES_SEEDS: postgres
+    ports:
+      - "7233:7233"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "tctl --address temporal:7233 cluster health | grep -q SERVING"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  temporal-ui:
+    image: temporalio/ui:2.31.2
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    ports:
+      - "8233:8080"
+    depends_on:
+      temporal:
+        condition: service_healthy
+
+volumes:
+  temporal-postgres:

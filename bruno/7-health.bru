@@ -1,0 +1,22 @@
+meta {
+  name: Health
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/health
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("reports every component", function () {
+    expect(res.body).to.include({ status: "ok", app: "up", redis: "up", temporal: "up" });
+    expect(res.body.suppliers).to.have.keys("supplierA", "supplierB");
+  });
+}

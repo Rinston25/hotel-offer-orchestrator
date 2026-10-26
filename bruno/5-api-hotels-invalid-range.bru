@@ -1,0 +1,21 @@
+meta {
+  name: Invalid range returns 400
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=delhi&minPrice=900&maxPrice=100
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 400
+}
+
+tests {
+  test("explains the problem", function () {
+    expect(res.body.error).to.equal("INVALID_REQUEST");
+  });
+}

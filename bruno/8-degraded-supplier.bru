@@ -1,0 +1,28 @@
+meta {
+  name: Degraded - run with SUPPLIER_B_FAIL=true
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/hotels?city=mumbai
+  body: none
+  auth: none
+}
+
+docs {
+  Only meaningful when supplier B is failing and the cache is empty:
+
+    docker compose exec redis redis-cli FLUSHALL
+    SUPPLIER_B_FAIL=true docker compose up -d app
+
+  Expect 200 with `x-degraded-suppliers: supplierB`. With both suppliers failing expect 502.
+}
+
+tests {
+  test("served from supplier A and flagged degraded", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getHeader("x-degraded-suppliers")).to.equal("supplierB");
+    res.body.forEach((h) => expect(h.supplier).to.equal("Supplier A"));
+  });
+}

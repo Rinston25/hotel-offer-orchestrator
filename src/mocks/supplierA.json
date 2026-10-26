@@ -1,0 +1,21 @@
+{
+  "delhi": [
+    { "hotelId": "A-DEL-1", "name": "Taj Palace", "price": 9200, "city": "delhi", "commissionPct": 12 },
+    { "hotelId": "A-DEL-2", "name": "Holtin", "price": 5600, "city": "delhi", "commissionPct": 15 },
+    { "hotelId": "A-DEL-3", "name": "Lotus Inn", "price": 3100, "city": "delhi", "commissionPct": 10 },
+    { "hotelId": "A-DEL-4", "name": "Royal Orchid", "price": 4500, "city": "delhi", "commissionPct": 18 },
+    { "hotelId": "A-DEL-5", "name": "Metro Stay", "price": 2200, "city": "delhi", "commissionPct": 8 }
+  ],
+  "mumbai": [
+    { "hotelId": "A-MUM-1", "name": "Sea View Residency", "price": 7800, "city": "mumbai", "commissionPct": 14 },
+    { "hotelId": "A-MUM-2", "name": "Marine Plaza", "price": 11500, "city": "mumbai", "commissionPct": 11 },
+    { "hotelId": "A-MUM-3", "name": "Gateway Suites", "price": 6400, "city": "mumbai", "commissionPct": 16 },
+    { "hotelId": "A-MUM-4", "name": "Juhu Beach Hotel", "price": 5200, "city": "mumbai", "commissionPct": 9 }
+  ],
+  "bangalore": [
+    { "hotelId": "A-BLR-1", "name": "Garden City Inn", "price": 4300, "city": "bangalore", "commissionPct": 13 },
+    { "hotelId": "A-BLR-2", "name": "Tech Park Lodge", "price": 3600, "city": "bangalore", "commissionPct": 10 },
+    { "hotelId": "A-BLR-3", "name": "Lalbagh Residency", "price": 5900, "city": "bangalore", "commissionPct": 17 },
+    { "hotelId": "A-BLR-4", "name": "Orion Grand", "price": 8100, "city": "bangalore", "commissionPct": 12 }
+  ]
+}
